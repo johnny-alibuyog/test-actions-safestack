@@ -2,7 +2,7 @@ name: Deploy on Azure
 
 on:
   push:
-    
+
   pull_request:
     types: [opened, reopened, edited, synchronize]
 
@@ -16,6 +16,8 @@ jobs:
       - name: Checking out code
         uses: actions/checkout@v3
 
-      - name: Building code
-        run: dotnet run Azure
+      - name: Deploy code to Azure
+        run: |
+          dotnet tool restore
+          dotnet run Azure
       
