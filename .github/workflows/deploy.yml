@@ -1,28 +1,84 @@
-name: Deploy on Azure
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy ASP.Net Core app to Azure Web App - TestActionsSafestack
 
 on:
   push:
-
-  pull_request:
-    types: [opened, reopened, edited, synchronize]
-
-# env:
-#   ARTIFACT_LOCATION: "./deploy"
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
+          include-prerelease: true
+
+      - name: Build with dotnet
+        run: dotnet run Bundle
+
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v2
+        with:
+          name: .net-app
+          path: deploy
+
   deploy:
     runs-on: windows-latest
+    needs: build
+    environment:
+      name: 'production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
     steps:
-      - name: Checking out code
-        uses: actions/checkout@v3
-
-      - name: Login to Azure
-        uses: azure/login@v1
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v2
         with:
-          credentials: '${{ secrets.AZURE_CREDENTIALS }}'
+          name: .net-app
 
-      - name: Deploy code to Azure
-        run: |
-          dotnet tool restore
-          dotnet run Azure
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'TestActionsSafestack'
+          slot-name: 'production'
+          publish-profile: ${{ AZURE_CREDENTIALS }}
+          package: .
+
+
+# name: Deploy on Azure
+
+# on:
+#   push:
+
+#   pull_request:
+#     types: [opened, reopened, edited, synchronize]
+
+# # env:
+# #   ARTIFACT_LOCATION: "./deploy"
+
+# jobs:
+#   deploy:
+#     runs-on: windows-latest
+#     steps:
+#       - name: Checking out code
+#         uses: actions/checkout@v3
+
+#       - name: Login to Azure
+#         uses: azure/login@v1
+#         with:
+#           credentials: '${{ secrets.AZURE_CREDENTIALS }}'
+
+#       - name: Deploy code to Azure
+#         run: |
+#           dotnet tool restore
+#           dotnet run Azure
       
