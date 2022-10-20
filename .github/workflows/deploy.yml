@@ -1,6 +1,8 @@
 name: Deploy on Azure
 
 on:
+  push:
+    
   pull_request:
     types: [opened, reopened, edited, synchronize]
 
