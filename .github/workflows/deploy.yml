@@ -16,6 +16,11 @@ jobs:
       - name: Checking out code
         uses: actions/checkout@v3
 
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: '${{ secrets.AZURE_CREDENTIALS }}'
+
       - name: Deploy code to Azure
         run: |
           dotnet tool restore
