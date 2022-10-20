@@ -23,7 +23,9 @@ jobs:
           include-prerelease: true
 
       - name: Build with dotnet
-        run: dotnet run Bundle
+        run: |
+          dotnet tool restore
+          dotnet run Bundle
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
