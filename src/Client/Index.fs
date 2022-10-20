@@ -4,8 +4,6 @@ open Elmish
 open Fable.Remoting.Client
 open Shared
 
-// trigger deployments
-
 type Model = { todos: Todo list; input: string }
 
 type Msg =
