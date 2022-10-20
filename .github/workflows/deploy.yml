@@ -1,0 +1,19 @@
+name: Deploy on Azure
+
+on:
+  pull_request:
+    types: [opened, reopened, edited, synchronize]
+
+# env:
+#   ARTIFACT_LOCATION: "./deploy"
+
+jobs:
+  deploy:
+    runs-on: windows-latest
+    steps:
+      - name: Checking out code
+        uses: actions/checkout@v3
+
+      - name: Building code
+        run: dotnet run Azure
+      
