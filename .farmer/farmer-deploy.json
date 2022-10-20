@@ -1,0 +1,104 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "outputs": {},
+  "parameters": {},
+  "resources": [
+    {
+      "apiVersion": "2014-04-01",
+      "dependsOn": [],
+      "kind": "web",
+      "location": "westeurope",
+      "name": "TestActionsSafestack-ai",
+      "properties": {
+        "ApplicationId": "TestActionsSafestack",
+        "Application_Type": "web",
+        "DisableIpMasking": false,
+        "SamplingPercentage": 100,
+        "name": "TestActionsSafestack-ai"
+      },
+      "tags": {
+        "[concat('hidden-link:', resourceGroup().id, '/providers/Microsoft.Web/sites/', 'TestActionsSafestack')]": "Resource"
+      },
+      "type": "Microsoft.Insights/components"
+    },
+    {
+      "apiVersion": "2018-02-01",
+      "location": "westeurope",
+      "name": "TestActionsSafestack-farm",
+      "properties": {
+        "name": "TestActionsSafestack-farm",
+        "perSiteScaling": false,
+        "reserved": false
+      },
+      "sku": {
+        "capacity": 1,
+        "name": "F1",
+        "size": "0",
+        "tier": "Free"
+      },
+      "tags": {},
+      "type": "Microsoft.Web/serverfarms"
+    },
+    {
+      "apiVersion": "2021-03-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.Insights/components', 'TestActionsSafestack-ai')]",
+        "[resourceId('Microsoft.Web/serverfarms', 'TestActionsSafestack-farm')]"
+      ],
+      "kind": "app",
+      "location": "westeurope",
+      "name": "TestActionsSafestack",
+      "properties": {
+        "httpsOnly": false,
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', 'TestActionsSafestack-farm')]",
+        "siteConfig": {
+          "alwaysOn": false,
+          "appSettings": [
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference(resourceId('Microsoft.Insights/components', 'TestActionsSafestack-ai'), '2014-04-01').InstrumentationKey]"
+            },
+            {
+              "name": "APPINSIGHTS_PROFILERFEATURE_VERSION",
+              "value": "1.0.0"
+            },
+            {
+              "name": "APPINSIGHTS_SNAPSHOTFEATURE_VERSION",
+              "value": "1.0.0"
+            },
+            {
+              "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
+              "value": "~2"
+            },
+            {
+              "name": "DiagnosticServices_EXTENSION_VERSION",
+              "value": "~3"
+            },
+            {
+              "name": "InstrumentationEngine_EXTENSION_VERSION",
+              "value": "~1"
+            },
+            {
+              "name": "SnapshotDebugger_EXTENSION_VERSION",
+              "value": "~1"
+            },
+            {
+              "name": "XDT_MicrosoftApplicationInsights_BaseExtensions",
+              "value": "~1"
+            },
+            {
+              "name": "XDT_MicrosoftApplicationInsights_Mode",
+              "value": "recommended"
+            }
+          ],
+          "connectionStrings": [],
+          "metadata": [],
+          "netFrameworkVersion": "v6.0"
+        }
+      },
+      "tags": {},
+      "type": "Microsoft.Web/sites"
+    }
+  ]
+}
