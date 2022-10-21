@@ -52,7 +52,7 @@ jobs:
         with:
           app-name: 'TestActionsSafestack'
           slot-name: 'production'
-          publish-profile: ${{ secrets.AZURE_CREDENTIALS }}
+          publish-profile: ${{ secrets.PUBLISH_PROFILE }}
           package: .
 
 
