@@ -1,4 +1,4 @@
-# Build Status Badge: ![](https://github.com/johnny-alibuyog/test-actions-safestack/workflows/Pipeline/badge.svg)
+# Deployment Status: ![](https://github.com/johnny-alibuyog/test-actions-safestack/workflows/Deployment/badge.svg)
 
 # SAFE Template
 
