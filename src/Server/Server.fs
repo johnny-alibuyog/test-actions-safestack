@@ -17,11 +17,10 @@ module Storage =
             Error "Invalid todo"
 
     do
-        addTodo (Todo.create "Create new SAFE project")
-        |> ignore
-
+        addTodo (Todo.create "Create new SAFE project") |> ignore
         addTodo (Todo.create "Write your app") |> ignore
         addTodo (Todo.create "Ship it !!!") |> ignore
+        addTodo (Todo.create "Via github actions !!!") |> ignore
 
 let todosApi =
     { find = fun () -> async { return Storage.todos |> List.ofSeq }
