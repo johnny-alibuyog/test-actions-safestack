@@ -47,6 +47,33 @@ Target.create "Azure" (fun _ ->
     |> Deploy.execute webAppName Deploy.NoParameters
     |> ignore)
 
+Target.create "WriteArmTemplate" (fun _ ->
+    let storage =
+        storageAccount {
+            name (String.toLower $"{webAppName}str")
+            add_public_container "data"
+            add_queue "messages"
+        }
+
+    let web =
+        webApp {
+            name webAppName
+            operating_system OS.Windows
+            runtime_stack Runtime.DotNet60
+            zip_deploy "deploy"
+            setting "connection-string" storage.Key
+        }
+
+    let deployment =
+        arm {
+            location Location.WestEurope
+            add_resources [ web; storage ]
+        }
+
+    deployment
+    |> Writer.quickWrite "deployment-template"
+    |> ignore)
+
 Target.create "Run" (fun _ ->
     run dotnet "build" sharedPath
 
@@ -71,12 +98,9 @@ let dependencies =
       ==> "Bundle"
       ==> "Azure"
 
-      "Clean"
-      ==> "InstallClient"
-      ==> "Run"
+      "Clean" ==> "InstallClient" ==> "Run"
 
-      "InstallClient"
-      ==> "RunTests" ]
+      "InstallClient" ==> "RunTests" ]
 
 [<EntryPoint>]
 let main args = runOrDefault args
